@@ -121,7 +121,7 @@ interface IOneSignal {
 	addListenerForNotificationOpened(callback?: Action<Notification>): Promise<void>
 	setSubscription(newSubscription: boolean): Promise<void>
 	showHttpPermissionRequest(options?: AutoPromptOptions): Promise<any>
-  sendSelfNotification(options?: NotificationOptions): Promise<void>
+  sendSelfNotification(title: string, text: string, url: string, icon: string): Promise<void>
 	showNativePrompt(): Promise<void>
 	showSlidedownPrompt(options?: AutoPromptOptions): Promise<void>
 	showCategorySlidedown(options?: AutoPromptOptions): Promise<void>
@@ -488,7 +488,7 @@ interface IOneSignal {
     });
   };
 
-  function sendSelfNotification(options?: NotificationOptions): Promise<void> {
+  function sendSelfNotification(title?: string, text?: string, url?: string, icon?: string): Promise<void> {
     return new Promise((resolve, reject) => {
       if (!doesOneSignalExist()) {
         reactOneSignalFunctionQueue.push({
@@ -501,7 +501,7 @@ interface IOneSignal {
 
       try {
         window["OneSignal"].push(() => {
-          window["OneSignal"].sendSelfNotification(options)
+          window["OneSignal"].sendSelfNotification(title, text, url, icon)
             .then((value: any) => resolve(value))
             .catch((error: any) => reject(error));
         });
