@@ -121,6 +121,7 @@ interface IOneSignal {
 	addListenerForNotificationOpened(callback?: Action<Notification>): Promise<void>
 	setSubscription(newSubscription: boolean): Promise<void>
 	showHttpPermissionRequest(options?: AutoPromptOptions): Promise<any>
+  sendSelfNotification(): Promise<void>
 	showNativePrompt(): Promise<void>
 	showSlidedownPrompt(options?: AutoPromptOptions): Promise<void>
 	showCategorySlidedown(options?: AutoPromptOptions): Promise<void>
@@ -478,6 +479,29 @@ interface IOneSignal {
       try {
         window["OneSignal"].push(() => {
           window["OneSignal"].showHttpPermissionRequest(options)
+            .then((value: any) => resolve(value))
+            .catch((error: any) => reject(error));
+        });
+      } catch (error) {
+        reject(error);
+      }
+    });
+  };
+
+  function sendSelfNotification(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (!doesOneSignalExist()) {
+        reactOneSignalFunctionQueue.push({
+          name: "sendSelfNotification",
+          args: arguments,
+          promiseResolver: resolve,
+        });
+        return;
+      }
+
+      try {
+        window["OneSignal"].push(() => {
+          window["OneSignal"].sendSelfNotification()
             .then((value: any) => resolve(value))
             .catch((error: any) => reject(error));
         });
@@ -965,6 +989,7 @@ const OneSignalReact: IOneSignal = {
 	addListenerForNotificationOpened,
 	setSubscription,
 	showHttpPermissionRequest,
+  sendSelfNotification,
 	showNativePrompt,
 	showSlidedownPrompt,
 	showCategorySlidedown,
